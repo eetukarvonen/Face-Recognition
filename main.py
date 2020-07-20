@@ -1,18 +1,22 @@
 import face_recognition
+from pathlib import Path
 from PIL import Image, ImageDraw
 
-obamaPic = face_recognition.load_image_file('./img/known/Barack Obama.jpg')
-obabaEnc = face_recognition.face_encodings(obamaPic)[0]
+def loadKnownPics():
+    knownFaceEncodings = []
+    knownFaceNames = []
+    paths = Path('./img/known').glob('**/*.jpg')
+    for path in paths:
+        pathStr = str(path)
+        fileName = pathStr.split("/")[-1].split(".")[0]
+        pic = face_recognition.load_image_file(pathStr)
+        encoding = face_recognition.face_encodings(pic)[0]
+        knownFaceEncodings.append(encoding)
+        knownFaceNames.append(fileName)
+    
+    return knownFaceNames, knownFaceEncodings
 
-niinistoPic = face_recognition.load_image_file('./img/known/Sauli Niinisto.jpg')
-niinistoEnc = face_recognition.face_encodings(niinistoPic)[0]
-
-haukioPic = face_recognition.load_image_file('./img/known/Jenni Haukio.jpg')
-haukioEnc = face_recognition.face_encodings(haukioPic)[0]
-
-# Array of encodings and names
-knownFaceEncodings = [obabaEnc, niinistoEnc, haukioEnc]
-knownFaceNames = ["Barack Obama", "Sauli Niinsto", "Jenni Haukio"]
+knownFaceNames, knownFaceEncodings = loadKnownPics()
 
 # Load test image
 testImage = face_recognition.load_image_file('./img/groups/haukio-obama-niinisto.jpg')
